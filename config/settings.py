@@ -131,5 +131,5 @@ MAILERS = {
 }
 
 AUTH_USER_MODEL = "accounts.CustomUser"
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "login"  # temporary, until lessons exist
+LOGIN_URL = "root_login"
+LOGIN_REDIRECT_URL = "learning:home"
