@@ -8,6 +8,10 @@ Lessons
 
 <h1>Cybersecurity Lessons</h1>
 
-<p>Your cybersecurity lessons will appear here.</p>
+<ul>
+    {% for lesson in lessons %}
+    <li><a href="{% url 'lessons:detail' lesson.pk %}">{{ lesson.title }}</a></li>
+    {% endfor %}
+</ul>
 
 {% endblock %}

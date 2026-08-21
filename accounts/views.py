@@ -2,7 +2,10 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from .forms import SignUpForm
+# accounts/views.py
+from django.contrib.auth.decorators import login_not_required
 
+@login_not_required
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
