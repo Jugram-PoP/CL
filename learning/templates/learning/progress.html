@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Your Progress</h1>
+
+<p><strong>{{ percent }}% complete</strong></p>
+<progress value="{{ percent }}" max="100"></progress>
+
+<p>{{ lessons_done }} of {{ total_lessons }} lessons read &middot; {{ quizzes_done }} of {{ total_lessons }} quizzes
+    correct</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Lesson</th>
+            <th>Read</th>
+            <th>Quiz</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in lesson_rows %}
+        <tr>
+            <td>{{ row.lesson.title }}</td>
+            <td>{% if row.read %}✅{% else %}—{% endif %}</td>
+            <td>
+                {% if row.quiz_complete %}
+                ✅
+                {% elif row.read %}
+                <a href="{% url 'lessons:quiz' row.lesson.pk %}">Take quiz</a>
+                {% else %}
+                —
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

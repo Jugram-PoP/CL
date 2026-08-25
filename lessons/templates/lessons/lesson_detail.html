@@ -4,4 +4,18 @@
 <div class="lesson-content">
     {{ lesson.content|safe }}
 </div>
+
+{% if is_completed %}
+<p>✅ You've completed this lesson.</p>
+{% if quiz_already_answered %}
+<a href="{% url 'lessons:quiz' lesson.pk %}">View quiz results</a>
+{% else %}
+<a href="{% url 'lessons:quiz' lesson.pk %}">Go to quiz</a>
+{% endif %}
+{% else %}
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="mark_complete">Mark as Complete &amp; Take Quiz</button>
+</form>
+{% endif %}
 {% endblock %}

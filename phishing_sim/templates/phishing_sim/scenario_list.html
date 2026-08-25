@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Phishing Simulations — CyberLearn{% endblock %}
+
+{% block content %}
+<style>
+    .sim-container {
+        max-width: 600px;
+        margin: 40px auto;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .sim-header {
+        border-bottom: 1px solid #334155;
+        padding-bottom: 20px;
+        margin-bottom: 24px;
+    }
+
+    .sim-header h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sim-header p {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .sim-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .sim-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 24px;
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.125rem;
+        transition: all 0.2s ease;
+    }
+
+    .sim-card:hover {
+        background-color: #4f46e5;
+        border-color: #6366f1;
+        transform: translateY(-2px);
+    }
+
+    .sim-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        border: 1px solid transparent;
+    }
+
+    .badge-pending {
+        background-color: #334155;
+        color: #e2e8f0;
+        border-color: #475569;
+    }
+
+    .badge-completed {
+        background-color: #064e3b;
+        color: #34d399;
+        border-color: #059669;
+    }
+</style>
+
+<div class="sim-container">
+    <div class="sim-header">
+        <h1>Phishing Simulations</h1>
+        <p>Select a scenario below to start your evaluation.</p>
+    </div>
+
+    <div class="sim-list">
+        {% for scenario in scenarios %}
+        <a href="{% url 'phishing_sim:scenario_detail' pk=scenario.pk %}" class="sim-card">
+            <span>Scenario {{ scenario.order|default:forloop.counter }}</span>
+
+            {% if scenario.answered %}
+            <span class="sim-badge badge-completed">✓ Completed</span>
+            {% else %}
+            <span class="sim-badge badge-pending">Start →</span>
+            {% endif %}
+        </a>
+        {% empty %}
+        <div style="text-align: center; color: #94a3b8; padding: 32px; background: #1e293b; border-radius: 12px;">
+            No scenarios found.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

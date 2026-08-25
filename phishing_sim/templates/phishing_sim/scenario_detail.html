@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}Scenario {{ scenario.order|default:scenario.pk }} — CyberLearn{% endblock %}
+
+{% block content %}
+<style>
+    .detail-wrapper {
+        max-width: 720px;
+        margin: 30px auto;
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #f8fafc;
+    }
+
+    .back-btn {
+        display: inline-block;
+        color: #818cf8;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+        text-decoration: underline;
+    }
+
+    /* Mock Email Window */
+    .email-card {
+        background: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #334155;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        color: #0f172a;
+        margin-bottom: 28px;
+    }
+
+    .window-bar {
+        background: #f1f5f9;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .dots {
+        display: flex;
+        gap: 6px;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .dot-r {
+        background: #ef4444;
+    }
+
+    .dot-y {
+        background: #f59e0b;
+    }
+
+    .dot-g {
+        background: #10b981;
+    }
+
+    .email-header {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 20px;
+    }
+
+    .email-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 12px 0;
+    }
+
+    .sender-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #1e293b;
+        color: #ffffff;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+    }
+
+    .sender-info p {
+        margin: 0;
+    }
+
+    .sender-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .sender-to {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    .email-content {
+        padding: 24px 20px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        white-space: pre-line;
+        color: #1e293b;
+        min-height: 140px;
+    }
+
+    .email-footer {
+        background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+        padding: 10px 20px;
+        font-size: 0.75rem;
+        color: #64748b;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Decision Box */
+    .verdict-box {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 28px;
+        text-align: center;
+    }
+
+    .verdict-box h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #ffffff;
+    }
+
+    .verdict-box p {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        margin-bottom: 20px;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        color: #ffffff;
+        transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .action-btn:active {
+        transform: scale(0.97);
+    }
+
+    .btn-phish {
+        background: #dc2626;
+    }
+
+    .btn-phish:hover {
+        background: #ef4444;
+    }
+
+    .btn-safe {
+        background: #059669;
+    }
+
+    .btn-safe:hover {
+        background: #10b981;
+    }
+
+    /* Results Box */
+    .result-box {
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid;
+    }
+
+    .res-correct {
+        background: #064e3b;
+        border-color: #059669;
+        color: #ecfdf5;
+    }
+
+    .res-incorrect {
+        background: #7f1d1d;
+        border-color: #dc2626;
+        color: #fef2f2;
+    }
+
+    .res-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+    }
+
+    .res-list {
+        margin: 12px 0 0 0;
+        padding-left: 20px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="detail-wrapper">
+    <a href="{% url 'phishing_sim:scenario_list' %}" class="back-btn">← Back to Inbox</a>
+
+    <!-- Email UI -->
+    <div class="email-card">
+        <div class="window-bar">
+            <div class="dots">
+                <span class="dot dot-r"></span>
+                <span class="dot dot-y"></span>
+                <span class="dot dot-g"></span>
+            </div>
+            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Simulation #{{ scenario.order|default:scenario.pk }}</span>
+        </div>
+
+        <div class="email-header">
+            <h1 class="email-title">{{ scenario.subject }}</h1>
+            <div class="sender-row">
+                <div class="avatar">{{ scenario.sender|slice:":1"|upper }}</div>
+                <div class="sender-info">
+                    <p class="sender-name">{{ scenario.sender }}</p>
+                    <p class="sender-to">To: you &lt;student@university.edu.gh&gt;</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="email-content">{{ scenario.body }}</div>
+
+        <div class="email-footer">
+            <span>🔒 CyberLearn Mail Guard</span>
+            <span>Simulation Mode</span>
+        </div>
+    </div>
+
+    <!-- Decision or Feedback -->
+    {% if not attempt %}
+    <div class="verdict-box">
+        <h2>What is your verdict?</h2>
+        <p>Analyze the sender details, urgency, and body copy above before making your choice.</p>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="btn-group">
+                <button type="submit" name="answer" value="phishing" class="action-btn btn-phish">🚨 Mark as
+                    Phishing</button>
+                <button type="submit" name="answer" value="safe" class="action-btn btn-safe">✅ Mark as Safe
+                    Email</button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="result-box {% if attempt.is_correct %}res-correct{% else %}res-incorrect{% endif %}">
+        <h2 class="res-title">
+            {% if attempt.is_correct %}🎉 Correct!{% else %}⚠️ Incorrect{% endif %}
+        </h2>
+        <p style="font-size: 0.9rem; margin: 0;">
+            You marked this email as <strong>{% if attempt.marked_as_phishing %}Phishing{% else %}Safe{% endif %}</strong>.
+        </p>
+
+        {% if scenario.red_flags %}
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.2);">
+            {% if scenario.red_flags.red_flags %}
+            <strong style="font-size: 0.95rem;">⚠️ Key Red Flags:</strong>
+            <ul class="res-list">
+                {% for flag in scenario.red_flags.red_flags %}
+                <li>{{ flag }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if scenario.red_flags.safety_reasons %}
+            <strong style="font-size: 0.95rem;">✅ Why this email is safe:</strong>
+            <ul class="res-list">
+                {% for reason in scenario.red_flags.safety_reasons %}
+                <li>{{ reason }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if scenario.red_flags.what_to_do %}
+            <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-top: 12px;">
+                <strong>What You Should Do:</strong>
+                <p style="margin: 4px 0 0 0; font-size: 0.875rem;">{{ scenario.red_flags.what_to_do }}</p>
+            </div>
+            {% endif %}
+
+            {% if scenario.red_flags.important_lesson %}
+            <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-top: 12px;">
+                <strong>Key Takeaway:</strong>
+                <p style="margin: 4px 0 0 0; font-size: 0.875rem;">{{ scenario.red_flags.important_lesson }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

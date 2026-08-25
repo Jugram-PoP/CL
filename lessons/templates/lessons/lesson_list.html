@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Lessons</h1>
+<ul>
+    {% for item in lessons_with_status %}
+    <li>
+        <a href="{% url 'lessons:detail' item.lesson.pk %}">{{ item.lesson.title }}</a>
+        {% if item.is_completed %}✅ Completed{% else %}Not started{% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

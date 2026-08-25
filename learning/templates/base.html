@@ -2,67 +2,135 @@
 <html lang="en">
 
 <head>
-    <style>
-        .lesson-content h2 {
-            margin-top: 28px;
-            font-size: 1.4rem;
-        }
-
-        .lesson-content h3 {
-            margin-top: 22px;
-            font-size: 1.2rem;
-        }
-
-        .lesson-content h4,
-        .lesson-content h5 {
-            margin-top: 16px;
-            font-size: 1.05rem;
-        }
-
-        .lesson-content ul {
-            padding-left: 22px;
-        }
-
-        .lesson-content li {
-            margin-bottom: 4px;
-        }
-
-        .lesson-content blockquote {
-            border-left: 3px solid #6366f1;
-            background: #f8f8ff;
-            margin: 14px 0;
-            padding: 8px 16px;
-            font-style: italic;
-        }
-    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+        rel="stylesheet">
 
     <title>{% block title %}CyberLearn{% endblock %}</title>
+
+    <style>
+        :root {
+            --bg-dark: #0D0F12;
+            --card-bg: #161A20;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #F0F4F8;
+            --text-muted: #8E9BAE;
+            --neon-red: #FF2B4A;
+            --neon-cyan: #00F0FF;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #111419;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .nav-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: #FFFFFF;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.15s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-left: auto;
+        }
+
+        .nav-email {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .nav-logout-btn {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .nav-logout-btn:hover {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+    </style>
 </head>
 
 <body>
 
     <nav>
-        <a href="/">CyberLearn</a>
+        <a href="/learning/" class="nav-brand">CyberLearn</a>
 
-        {% if user.is_authenticated %}
-        <a href="/lessons/">Lessons</a>
-        <a href="/simulation/">Simulation</a>
-        <div style="text-align: right;">
-            <span style="color: red; display:block;">{{ user.email }}</span>
-            <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Log Out</button>
-            </form>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+            <a href="/lessons/">Lessons</a>
+            <a href="/simulation/">Simulation</a>
+            <a href="{% url 'learning:progress' %}">Progress</a>
+            <div class="nav-right">
+                <span class="nav-email">{{ user.email }}</span>
+                <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-logout-btn">Log Out</button>
+                </form>
+            </div>
+            {% else %}
+            <a href="{% url 'accounts:login' %}">Log In</a>
+            <a href="{% url 'accounts:signup' %}">Sign Up</a>
+            {% endif %}
         </div>
-        {% else %}
-        <a href="{% url 'accounts:login' %}">Log In</a>
-        <a href="{% url 'accounts:signup' %}">Sign Up</a>
-        {% endif %}
     </nav>
 
-    <main>
+    <main class="container">
         {% block content %}
         {% endblock %}
     </main>

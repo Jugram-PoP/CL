@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}Phishing Simulation{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+
+    <!-- Header / Navbar stays on EVERY page -->
+    <header class="bg-slate-900 text-white p-4">
+        <a href="{% url 'phishing_sim:scenario_list' %}">🛡️ PhishGuard</a>
+    </header>
+
+    <!-- Placeholder for page-specific content -->
+    <main class="container mx-auto p-4">
+        {% block content %}
+        <!-- Child templates inject their unique HTML right here -->
+        {% endblock %}
+    </main>
+
+</body>
+
+</html>
