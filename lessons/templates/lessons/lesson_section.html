@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load lessons_extras %}
+{% block content %}
+
+<style>
+    .ls-page {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .ls-progress {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 28px;
+    }
+
+    .ls-progress .dot {
+        flex: 1;
+        height: 6px;
+        border-radius: 4px;
+        background: #E1EDE9;
+    }
+
+    .ls-progress .dot.done {
+        background: var(--teal, #0F6E64);
+    }
+
+    .ls-progress .dot.current {
+        background: var(--coral, #FF6B4A);
+    }
+
+    .ls-eyebrow {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--teal, #0F6E64);
+        letter-spacing: 0.04em;
+        margin-bottom: 6px;
+    }
+
+    .ls-card {
+        background: #F8FBFA;
+        border-radius: 20px;
+        padding: 36px 36px 28px;
+        margin-bottom: 24px;
+    }
+
+    .ls-card h2 {
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        font-size: 26px;
+        color: var(--ink, #1B3A36);
+        margin-top: 0;
+    }
+
+    .ls-card h3 {
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        color: var(--ink, #1B3A36);
+    }
+
+    .ls-card p {
+        color: #3F534F;
+        line-height: 1.65;
+    }
+
+    .ls-card ul,
+    .ls-card ol {
+        color: #3F534F;
+        line-height: 1.65;
+    }
+
+    .ls-card code {
+        background: #E1EDE9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+
+    .ls-question {
+        background: white;
+        border: 1.5px solid #E1EDE9;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-top: 20px;
+    }
+
+    .ls-question p.prompt {
+        font-weight: 600;
+        color: var(--ink, #1B3A36);
+        margin-top: 0;
+    }
+
+    .ls-question label {
+        display: block;
+        padding: 8px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: var(--ink, #1B3A36);
+        font-size: 14px;
+    }
+
+    .ls-question label:hover {
+        background: #F1F7F5;
+    }
+
+    .ls-check-btn {
+        background: var(--coral, #FF6B4A);
+        color: white;
+        border: none;
+        font-weight: 600;
+        font-size: 13px;
+        padding: 8px 18px;
+        border-radius: 20px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .inline-result {
+        font-weight: 600;
+        margin-top: 8px;
+    }
+
+    .ls-open-question {
+        background: white;
+        border: 1.5px solid #E1EDE9;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-top: 20px;
+    }
+
+    .ls-open-question p.prompt {
+        font-weight: 600;
+        color: var(--ink, #1B3A36);
+        margin-top: 0;
+    }
+
+    .ls-open-question textarea {
+        width: 100%;
+        min-height: 90px;
+        padding: 12px;
+        border: 1.5px solid #D7E5E1;
+        border-radius: 10px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 14px;
+        color: var(--ink, #1B3A36);
+        resize: vertical;
+        box-sizing: border-box;
+    }
+
+    .ls-reveal-btn {
+        background: white;
+        color: var(--teal, #0F6E64);
+        border: 1.5px solid var(--teal, #0F6E64);
+        font-weight: 600;
+        font-size: 13px;
+        padding: 8px 18px;
+        border-radius: 20px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .ls-model-answer {
+        display: none;
+        background: #F1F7F5;
+        border-left: 4px solid var(--teal, #0F6E64);
+        padding: 12px 16px;
+        border-radius: 0 10px 10px 0;
+        margin-top: 12px;
+        font-size: 14px;
+        color: var(--ink, #1B3A36);
+        line-height: 1.6;
+    }
+
+    .ls-model-answer.visible {
+        display: block;
+    }
+
+    .ls-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+    }
+
+    .ls-nav a,
+    .ls-nav button {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        padding: 11px 22px;
+        border-radius: 24px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .ls-nav .prev {
+        background: white;
+        color: var(--ink, #1B3A36);
+        border: 1.5px solid #D7E5E1;
+    }
+
+    .ls-nav .next {
+        background: var(--coral, #FF6B4A);
+        color: white;
+    }
+
+    .ls-nav .finish {
+        background: var(--teal, #0F6E64);
+        color: white;
+    }
+</style>
+
+<div class="ls-page">
+
+    <div class="ls-progress">
+        {% for i in total_sections|make_list %}
+        <div
+            class="dot {% if forloop.counter0 < section_index %}done{% elif forloop.counter0 == section_index %}current{% endif %}">
+        </div>
+        {% endfor %}
+    </div>
+
+    <p class="ls-eyebrow">{{ lesson.title }} &middot; Section {{ section_index|add:1 }} of {{ total_sections }}</p>
+
+    <div class="ls-card">
+        {{ html|safe }}
+
+        {% for q in questions %}
+        {% with attempt=existing_attempts|get_item:q.id %}
+        <div class="ls-question" data-question-id="{{ q.id }}">
+            <p class="prompt">Quick check: {{ q.text }}</p>
+            {% for choice in q.choices.all %}
+            <label>
+                {% if attempt and attempt.selected_choice_id == choice.id %}
+                <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}" checked disabled>
+                {% elif attempt %}
+                <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}" disabled>
+                {% else %}
+                <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}">
+                {% endif %}
+                {{ choice.text }}
+            </label>
+            {% endfor %}
+            {% if not attempt %}
+            <button type="button" class="ls-check-btn check-inline-btn">Check</button>
+            {% else %}
+            <p class="inline-result">{% if attempt.is_correct %}✅ Correct{% else %}❌ Not quite{% endif %}</p>
+            {% endif %}
+        </div>
+        {% endwith %}
+        {% endfor %}
+
+        {% for oq in open_questions %}
+        <div class="ls-open-question">
+            <p class="prompt">Reflect: {{ oq.prompt }}</p>
+            <textarea placeholder="Type your answer here first..."></textarea>
+            <br>
+            <button type="button" class="ls-reveal-btn reveal-answer-btn">Show model answer</button>
+            <div class="ls-model-answer">{{ oq.model_answer }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="ls-nav">
+        {% if has_prev %}
+        <a class="prev" href="{% url 'lessons:section' lesson.pk section_index|add:-1 %}">&larr; Back</a>
+        {% else %}
+        <a class="prev" href="{% url 'lessons:detail' lesson.pk %}">&larr; Lesson overview</a>
+        {% endif %}
+
+        {% if has_next %}
+        <a class="next" href="{% url 'lessons:section' lesson.pk section_index|add:1 %}">Continue &rarr;</a>
+        {% else %}
+        <form method="post" action="{% url 'lessons:detail' lesson.pk %}">
+            {% csrf_token %}
+            <button type="submit" name="mark_complete" class="finish">Finish lesson ✓</button>
+        </form>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+    document.querySelectorAll('.check-inline-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const container = btn.closest('.ls-question');
+            const selected = container.querySelector('input[type="radio"]:checked');
+            if (!selected) { alert("Pick an answer first."); return; }
+
+            const resp = await fetch("{% url 'lessons:answer_question' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: `choice_id=${selected.value}`,
+            });
+            const data = await resp.json();
+            container.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+            btn.remove();
+            const result = document.createElement('p');
+            result.className = 'inline-result';
+            result.textContent = data.is_correct ? "✅ Correct" : "❌ Not quite";
+            container.appendChild(result);
+        });
+    });
+
+    document.querySelectorAll('.reveal-answer-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const container = btn.closest('.ls-open-question');
+            container.querySelector('.ls-model-answer').classList.add('visible');
+            btn.disabled = true;
+            btn.textContent = "Answer revealed";
+        });
+    });
+</script>
+
+{% endblock %}

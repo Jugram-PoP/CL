@@ -24,6 +24,7 @@ class Completion(models.Model):
 
 class Question(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="questions")
+    section = models.CharField(max_length=200, blank=True)
     text = models.CharField(max_length=300)
 
     def __str__(self):
@@ -47,3 +48,20 @@ class QuizAttempt(models.Model):
 
     class Meta:
         unique_together = ("user", "question")  # one attempt per user per question
+
+class OpenQuestion(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="open_questions")
+    section = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Must exactly match a <h2> heading in the lesson content"
+    )
+    prompt = models.TextField(help_text="The reflection question shown to the student")
+    model_answer = models.TextField(help_text="Shown after the student reveals it")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.lesson.title} — {self.prompt[:40]}"

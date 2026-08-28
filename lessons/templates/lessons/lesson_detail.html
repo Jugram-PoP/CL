@@ -1,21 +1,82 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{ lesson.title }}</h1>
-<div class="lesson-content">
-    {{ lesson.content|safe }}
+
+<style>
+    .li-page {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        max-width: 640px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .li-card {
+        background: #F1F7F5;
+        border-radius: 24px;
+        padding: 56px 40px;
+    }
+
+    .li-eyebrow {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--teal, #0F6E64);
+        letter-spacing: 0.04em;
+        margin-bottom: 14px;
+    }
+
+    .li-card h1 {
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        font-size: 34px;
+        color: var(--ink, #1B3A36);
+        margin: 0 0 14px 0;
+    }
+
+    .li-card p.blurb {
+        color: #5B7A75;
+        font-size: 15px;
+        line-height: 1.6;
+        max-width: 44ch;
+        margin: 0 auto 30px;
+    }
+
+    .li-btn {
+        display: inline-block;
+        background: var(--coral, #FF6B4A);
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        padding: 13px 28px;
+        border-radius: 30px;
+        box-shadow: 0 6px 18px rgba(255, 107, 74, 0.28);
+    }
+
+    .li-btn.done {
+        background: var(--teal, #0F6E64);
+        box-shadow: 0 6px 18px rgba(15, 110, 100, 0.28);
+    }
+
+    .li-status {
+        margin-top: 18px;
+        font-size: 13px;
+        color: #5B7A75;
+    }
+</style>
+
+<div class="li-page">
+    <div class="li-card">
+        <p class="li-eyebrow">CyberLearn Lesson</p>
+        <h1>{{ lesson.title }}</h1>
+        <p class="blurb">A short, section-by-section walkthrough with a quick check along the way. Take your time — you
+            can always come back to a section later.</p>
+
+        {% if is_completed %}
+        <a class="li-btn done" href="{% url 'lessons:section' lesson.pk 0 %}">Review this lesson</a>
+        <p class="li-status">✅ You've completed this lesson</p>
+        {% else %}
+        <a class="li-btn" href="{% url 'lessons:section' lesson.pk 0 %}">Start Lesson &rarr;</a>
+        {% endif %}
+    </div>
 </div>
 
-{% if is_completed %}
-<p>✅ You've completed this lesson.</p>
-{% if quiz_already_answered %}
-<a href="{% url 'lessons:quiz' lesson.pk %}">View quiz results</a>
-{% else %}
-<a href="{% url 'lessons:quiz' lesson.pk %}">Go to quiz</a>
-{% endif %}
-{% else %}
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" name="mark_complete">Mark as Complete &amp; Take Quiz</button>
-</form>
-{% endif %}
 {% endblock %}

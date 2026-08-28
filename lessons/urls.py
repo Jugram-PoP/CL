@@ -6,5 +6,6 @@ app_name = 'lessons'
 urlpatterns = [
     path('', views.lesson_list, name='list'),
     path('<int:pk>/', views.lesson_detail, name='detail'),
-    path('<int:pk>/quiz/', views.lesson_quiz, name='quiz'),
+    path("answer/", views.answer_question, name="answer_question"),
+    path("<int:pk>/section/<int:section_index>/", views.lesson_section, name="section"),
 ]
