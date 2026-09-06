@@ -61,6 +61,62 @@
         font-size: 13px;
         color: #5B7A75;
     }
+
+    .li-toc {
+        text-align: left;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #E1EDE9;
+    }
+
+    .li-toc-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--teal, #0F6E64);
+        letter-spacing: 0.04em;
+        margin-bottom: 10px;
+    }
+
+    .li-toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .li-toc li {
+        border-bottom: 1px solid #EDF5F2;
+    }
+
+    .li-toc li:last-child {
+        border-bottom: none;
+    }
+
+    .li-toc a {
+        display: block;
+        padding: 10px 4px;
+        color: var(--ink, #1B3A36);
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .li-toc a:hover {
+        color: var(--coral, #FF6B4A);
+    }
+
+    .li-sub {
+        margin-left: 10px;
+    }
+
+    .li-sub-link {
+        font-size: 13px;
+        color: #8AA39D !important;
+    }
+
+    .li-sub-link::before {
+        content: "–";
+        margin-right: 6px;
+        color: #C6DAD5;
+    }
 </style>
 
 <div class="li-page">
@@ -75,6 +131,22 @@
         <p class="li-status">✅ You've completed this lesson</p>
         {% else %}
         <a class="li-btn" href="{% url 'lessons:section' lesson.pk 0 %}">Start Lesson &rarr;</a>
+        {% endif %}
+
+        {% if toc %}
+        <div class="li-toc">
+            <p class="li-toc-title">Jump to a section:</p>
+            <ul>
+                {% for item in toc %}
+                <li class="{% if item.level == 3 %}li-sub{% endif %}">
+                    <a href="{% url 'lessons:section' lesson.pk item.index %}"
+                        class="{% if item.level == 3 %}li-sub-link{% endif %}">
+                        {{ item.label }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endif %}
     </div>
 </div>

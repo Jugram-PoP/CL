@@ -1,18 +1,101 @@
 {% extends 'base.html' %}
 {% load lessons_extras %}
+{% block main_class %}full-width{% endblock %}
 {% block content %}
 
 <style>
+    html,
+    body {
+        height: 100%;
+    }
+
+    .lsw-wrap {
+        display: flex;
+        gap: 0;
+        height: calc(100vh - 90px);
+        width: 100%;
+        background: #ffffff;
+    }
+
+    .lsw-sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        padding: 16px 14px;
+        border-right: 1px solid #E1EDE9;
+        background: #ffffff;
+    }
+
+    .lsw-sidebar-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--teal, #0F6E64);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin: 0 0 10px 4px;
+    }
+
+    .lsw-sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .lsw-sidebar a {
+        display: block;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #3F534F;
+        text-decoration: none;
+        line-height: 1.4;
+        margin-bottom: 2px;
+    }
+
+    .lsw-sidebar a:hover {
+        background: #F1F7F5;
+        color: var(--ink, #1B3A36);
+    }
+
+    .lsw-sidebar a.current {
+        background: #F1F7F5;
+        color: var(--coral, #FF6B4A);
+        font-weight: 600;
+    }
+
+    .lsw-sub {
+        margin-left: 8px;
+    }
+
+    .lsw-sub-link {
+        font-size: 12px;
+        color: #8AA39D;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    .lsw-sub-link::before {
+        content: "–";
+        margin-right: 6px;
+        color: #C6DAD5;
+    }
+
     .ls-page {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        max-width: 720px;
+        max-width: 900px;
         margin: 0 auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 16px 32px;
+        box-sizing: border-box;
+        min-width: 0;
     }
 
     .ls-progress {
         display: flex;
         gap: 6px;
-        margin-bottom: 28px;
+        margin-bottom: 14px;
     }
 
     .ls-progress .dot {
@@ -35,20 +118,22 @@
         font-weight: 600;
         color: var(--teal, #0F6E64);
         letter-spacing: 0.04em;
-        margin-bottom: 6px;
+        margin-bottom: 10px;
     }
 
     .ls-card {
         background: #F8FBFA;
         border-radius: 20px;
-        padding: 36px 36px 28px;
-        margin-bottom: 24px;
+        padding: 26px 30px;
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 14px;
     }
 
     .ls-card h2 {
         font-family: 'Fraunces', serif;
         font-weight: 600;
-        font-size: 26px;
+        font-size: 22px;
         color: var(--ink, #1B3A36);
         margin-top: 0;
     }
@@ -56,18 +141,21 @@
     .ls-card h3 {
         font-family: 'Fraunces', serif;
         font-weight: 600;
+        font-size: 19px;
         color: var(--ink, #1B3A36);
     }
 
     .ls-card p {
         color: #3F534F;
-        line-height: 1.65;
+        line-height: 1.55;
+        font-size: 14.5px;
     }
 
     .ls-card ul,
     .ls-card ol {
         color: #3F534F;
-        line-height: 1.65;
+        line-height: 1.55;
+        font-size: 14.5px;
     }
 
     .ls-card code {
@@ -122,23 +210,31 @@
     }
 
     .ls-open-question {
-        background: white;
-        border: 1.5px solid #E1EDE9;
-        border-radius: 16px;
-        padding: 20px 22px;
-        margin-top: 20px;
+        background: #F8FBFA;
+        border-radius: 20px;
+        padding: 26px 30px;
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 14px;
     }
 
-    .ls-open-question p.prompt {
+    .ls-open-question h2 {
+        font-family: 'Fraunces', serif;
         font-weight: 600;
+        font-size: 22px;
         color: var(--ink, #1B3A36);
         margin-top: 0;
     }
 
+    .ls-open-question p.prompt {
+        font-size: 15px;
+        color: var(--ink, #1B3A36);
+    }
+
     .ls-open-question textarea {
         width: 100%;
-        min-height: 90px;
-        padding: 12px;
+        min-height: 140px;
+        padding: 14px;
         border: 1.5px solid #D7E5E1;
         border-radius: 10px;
         font-family: 'Plus Jakarta Sans', sans-serif;
@@ -157,16 +253,16 @@
         padding: 8px 18px;
         border-radius: 20px;
         cursor: pointer;
-        margin-top: 10px;
+        margin-top: 12px;
     }
 
     .ls-model-answer {
         display: none;
-        background: #F1F7F5;
+        background: white;
         border-left: 4px solid var(--teal, #0F6E64);
-        padding: 12px 16px;
+        padding: 14px 18px;
         border-radius: 0 10px 10px 0;
-        margin-top: 12px;
+        margin-top: 14px;
         font-size: 14px;
         color: var(--ink, #1B3A36);
         line-height: 1.6;
@@ -180,7 +276,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 30px;
+        margin-top: 0;
     }
 
     .ls-nav a,
@@ -212,72 +308,92 @@
     }
 </style>
 
-<div class="ls-page">
+<div class="lsw-wrap">
 
-    <div class="ls-progress">
-        {% for i in total_sections|make_list %}
-        <div
-            class="dot {% if forloop.counter0 < section_index %}done{% elif forloop.counter0 == section_index %}current{% endif %}">
-        </div>
-        {% endfor %}
+    <div class="lsw-sidebar">
+        <p class="lsw-sidebar-title">{{ lesson.title }}</p>
+        <ul>
+            {% for item in toc %}
+            <li class="{% if item.level == 3 %}lsw-sub{% endif %}">
+                <a href="{% url 'lessons:section' lesson.pk item.index %}"
+                    class="{% if item.is_current %}current{% endif %} {% if item.level == 3 %}lsw-sub-link{% endif %}">
+                    {{ item.label }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 
-    <p class="ls-eyebrow">{{ lesson.title }} &middot; Section {{ section_index|add:1 }} of {{ total_sections }}</p>
+    <div class="ls-page">
 
-    <div class="ls-card">
-        {{ html|safe }}
-
-        {% for q in questions %}
-        {% with attempt=existing_attempts|get_item:q.id %}
-        <div class="ls-question" data-question-id="{{ q.id }}">
-            <p class="prompt">Quick check: {{ q.text }}</p>
-            {% for choice in q.choices.all %}
-            <label>
-                {% if attempt and attempt.selected_choice_id == choice.id %}
-                <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}" checked disabled>
-                {% elif attempt %}
-                <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}" disabled>
-                {% else %}
-                <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}">
-                {% endif %}
-                {{ choice.text }}
-            </label>
+        <div class="ls-progress">
+            {% for i in total_sections|make_list %}
+            <div
+                class="dot {% if forloop.counter0 < section_index %}done{% elif forloop.counter0 == section_index %}current{% endif %}">
+            </div>
             {% endfor %}
-            {% if not attempt %}
-            <button type="button" class="ls-check-btn check-inline-btn">Check</button>
-            {% else %}
-            <p class="inline-result">{% if attempt.is_correct %}✅ Correct{% else %}❌ Not quite{% endif %}</p>
-            {% endif %}
         </div>
-        {% endwith %}
-        {% endfor %}
 
-        {% for oq in open_questions %}
+        <p class="ls-eyebrow">{{ lesson.title }} &middot; Section {{ section_index|add:1 }} of {{ total_sections }}</p>
+
+        {% if page.type == "content" %}
+        <div class="ls-card">
+            {{ page.html|safe }}
+
+            {% for q in page.questions %}
+            {% with attempt=existing_attempts|get_item:q.id %}
+            <div class="ls-question" data-question-id="{{ q.id }}">
+                <p class="prompt">Quick check: {{ q.text }}</p>
+                {% for choice in q.choices.all %}
+                <label>
+                    {% if attempt and attempt.selected_choice_id == choice.id %}
+                    <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}" checked disabled>
+                    {% elif attempt %}
+                    <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}" disabled>
+                    {% else %}
+                    <input type="radio" name="q_{{ q.id }}" value="{{ choice.id }}">
+                    {% endif %}
+                    {{ choice.text }}
+                </label>
+                {% endfor %}
+                {% if not attempt %}
+                <button type="button" class="ls-check-btn check-inline-btn">Check</button>
+                {% else %}
+                <p class="inline-result">{% if attempt.is_correct %}✅ Correct{% else %}❌ Not quite{% endif %}</p>
+                {% endif %}
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+
+        {% elif page.type == "open_question" %}
         <div class="ls-open-question">
-            <p class="prompt">Reflect: {{ oq.prompt }}</p>
+            <h2>Reflect</h2>
+            <p class="prompt">{{ page.open_question.prompt }}</p>
             <textarea placeholder="Type your answer here first..."></textarea>
             <br>
             <button type="button" class="ls-reveal-btn reveal-answer-btn">Show model answer</button>
-            <div class="ls-model-answer">{{ oq.model_answer }}</div>
+            <div class="ls-model-answer">{{ page.open_question.model_answer }}</div>
         </div>
-        {% endfor %}
-    </div>
-
-    <div class="ls-nav">
-        {% if has_prev %}
-        <a class="prev" href="{% url 'lessons:section' lesson.pk section_index|add:-1 %}">&larr; Back</a>
-        {% else %}
-        <a class="prev" href="{% url 'lessons:detail' lesson.pk %}">&larr; Lesson overview</a>
         {% endif %}
 
-        {% if has_next %}
-        <a class="next" href="{% url 'lessons:section' lesson.pk section_index|add:1 %}">Continue &rarr;</a>
-        {% else %}
-        <form method="post" action="{% url 'lessons:detail' lesson.pk %}">
-            {% csrf_token %}
-            <button type="submit" name="mark_complete" class="finish">Finish lesson ✓</button>
-        </form>
-        {% endif %}
+        <div class="ls-nav">
+            {% if has_prev %}
+            <a class="prev" href="{% url 'lessons:section' lesson.pk section_index|add:-1 %}">&larr; Back</a>
+            {% else %}
+            <a class="prev" href="{% url 'lessons:detail' lesson.pk %}">&larr; Lesson overview</a>
+            {% endif %}
+
+            {% if has_next %}
+            <a class="next" href="{% url 'lessons:section' lesson.pk section_index|add:1 %}">Continue &rarr;</a>
+            {% else %}
+            <form method="post" action="{% url 'lessons:detail' lesson.pk %}">
+                {% csrf_token %}
+                <button type="submit" name="mark_complete" class="finish">Finish lesson ✓</button>
+            </form>
+            {% endif %}
+        </div>
+
     </div>
 
 </div>

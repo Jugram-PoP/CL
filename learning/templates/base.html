@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
         rel="stylesheet">
 
     <title>{% block title %}CyberLearn{% endblock %}</title>
@@ -20,16 +21,28 @@
             --text-muted: #8E9BAE;
             --neon-red: #FF2B4A;
             --neon-cyan: #00F0FF;
+            --teal: #0F6E64;
+            --coral: #FF6B4A;
+            --paper: #F1F7F5;
+            --ink: #1B3A36;
+            --muted: #5B7A75;
         }
 
         * {
             box-sizing: border-box;
         }
 
+        html {
+            background-color: var(--bg-dark);
+            min-height: 100%;
+        }
+
         body {
             margin: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-dark);
+            background: #0D0F12 linear-gradient(to bottom, rgba(13, 15, 18, 0.72) 0%, rgba(13, 15, 18, 0.9) 100%),
+            url("{% static 'learning/img/deephacking-wallpaper-4k.jpg' %}") no-repeat center top fixed;
+            background-size: cover;
             color: var(--text-main);
             min-height: 100vh;
         }
@@ -38,9 +51,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #111419;
+            background: rgba(17, 20, 25, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             padding: 16px 32px;
             border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .nav-brand {
@@ -50,6 +68,11 @@
             color: #FFFFFF;
             text-decoration: none;
             letter-spacing: -0.02em;
+            transition: color 0.15s ease;
+        }
+
+        .nav-brand:hover {
+            color: var(--neon-cyan);
         }
 
         .nav-links {
@@ -83,6 +106,7 @@
         }
 
         .nav-logout-btn {
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background: transparent;
             border: 1px solid var(--card-border);
             color: var(--text-main);
@@ -98,10 +122,16 @@
             color: var(--neon-red);
         }
 
-        .container {
+        main {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 24px 20px;
+        }
+
+        main.full-width {
+            max-width: none;
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
@@ -109,20 +139,22 @@
 <body>
 
     <nav>
-        <a href="/learning/" class="nav-brand">CyberLearn</a>
-
         <div class="nav-links">
+            <a href="/learning/" class="nav-brand">CyberLearn</a>
             {% if user.is_authenticated %}
             <a href="/lessons/">Lessons</a>
             <a href="/simulation/">Simulation</a>
             <a href="{% url 'learning:progress' %}">Progress</a>
-            <div class="nav-right">
-                <span class="nav-email">{{ user.email }}</span>
-                <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="nav-logout-btn">Log Out</button>
-                </form>
-            </div>
+            {% endif %}
+        </div>
+
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+            <span class="nav-email">{{ user.email }}</span>
+            <form method="post" action="{% url 'accounts:logout' %}" style="margin:0; display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="nav-logout-btn">Log Out</button>
+            </form>
             {% else %}
             <a href="{% url 'accounts:login' %}">Log In</a>
             <a href="{% url 'accounts:signup' %}">Sign Up</a>
@@ -130,7 +162,7 @@
         </div>
     </nav>
 
-    <main class="container">
+    <main class="{% block main_class %}{% endblock %}">
         {% block content %}
         {% endblock %}
     </main>
